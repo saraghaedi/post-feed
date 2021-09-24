@@ -1,46 +1,37 @@
-import React, { useEffect, useState } from "react";
-import axios from "axios";
+import React, { useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { fetchNext5Posts } from "../store/feed/actions";
+import { selectFeedLoading, selectFeedPosts } from "../store/feed/selectors";
 import moment from "moment";
-
-const API_URL = `https://codaisseur-coders-network.herokuapp.com/posts`;
+import { Link } from "react-router-dom";
 
 export default function PostsFeed() {
-  const [data, setData] = useState({
-    loading: true,
-    count: null,
-    posts: [],
-  });
+  const dispatch = useDispatch();
 
-  async function fetchNext5Posts() {
-    setData({ ...data, loading: true });
-
-    const response = await axios.get(
-      `${API_URL}?limit=5&offset=${data.posts.length}`
-    );
-
-    setData({
-      loading: false,
-      count: response.data.count,
-      posts: [...data.posts, ...response.data.rows],
-    });
-  }
+  const loading = useSelector(selectFeedLoading);
+  const posts = useSelector(selectFeedPosts);
 
   useEffect(() => {
-    fetchNext5Posts();
-  }, []);
+    dispatch(fetchNext5Posts);
+  }, [dispatch]);
+
+  const onClickHandler = () => {
+    dispatch(fetchNext5Posts);
+  };
 
   return (
-    <div className="PostsFeed">
+    <div>
       <h2>Recent posts</h2>
 
-      {data.loading
+      {loading
         ? "Loading"
-        : data.posts.map((post) => (
-            <div>
-              <h3 key={post.id}>{post.title}</h3>
+        : posts.map((post) => (
+            <div key={post.id}>
+              <Link to={`/post/${post.id}`}>{post.title}</Link>
               <p>{moment(post.createdAt).format("DD-MM-YYYY")}</p>
               {post.tags.map((tag) => (
                 <div
+                  key={tag.id}
                   style={{
                     display: "flex",
                     flexDirection: "row",
@@ -48,7 +39,6 @@ export default function PostsFeed() {
                   }}
                 >
                   <p
-                    key={tag.id}
                     style={{
                       border: "solid black 2px",
                       borderRadius: "999px",
@@ -64,7 +54,7 @@ export default function PostsFeed() {
             </div>
           ))}
 
-      <button onClick={fetchNext5Posts}>Load More</button>
+      <button onClick={onClickHandler}>Load More</button>
     </div>
   );
 }

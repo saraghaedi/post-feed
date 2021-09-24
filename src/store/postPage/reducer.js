@@ -1,23 +1,22 @@
 const initialState = {
   loading: true,
-  count: null,
-  posts: [],
+  post: null,
+  comments: [],
 };
 
 export default function reducer(state = initialState, action) {
   switch (action.type) {
-    case "feed/startLoading": {
+    case "POSTPAGE/startLoading": {
       return {
         ...state,
         loading: true,
       };
     }
-
-    case "feed/postsFetched": {
+    case "POSTPAGE/postFullyFetched": {
       return {
         loading: false,
-        count: action.payload.count,
-        posts: [...state.posts, ...action.payload.rows],
+        post: action.payload.post,
+        comments: action.payload.comments,
       };
     }
     default: {
