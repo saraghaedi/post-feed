@@ -59,7 +59,7 @@ export default function PostPage() {
           <h2>Comments</h2>
           <p>{comments.count} comments on this post</p>
           <div>
-            {comments.count == 0
+            {comments.count === 0
               ? "Nothing to show :((("
               : comments.rows.map((comment) => {
                   return (
